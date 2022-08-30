@@ -3,6 +3,10 @@ library(tidyverse)
 library(easystats)
 library(modelr)
 library(janitor)
+theme_set(theme_minimal() + 
+            theme(panel.grid = element_blank(),
+                  axis.line = element_line(colour = "black"))
+          )
 
 # load data
 df <- read_csv("./Data/mushroom_growth.csv") %>% clean_names()
@@ -80,8 +84,16 @@ df$pred <- estimate_expectation(model = best_mod,data = df) %>%
   mutate(Predicted = 10^Predicted) %>% 
   pluck("Predicted")
 
-
 df %>% 
   ggplot(aes(x=growth_rate,y=pred)) +
   geom_point() +
   geom_smooth(se=FALSE, color="Red", method="lm", linetype=2)
+
+df$pred <- NULL
+
+gather_predictions(df,mod,mod2,mod3,mod4) %>% 
+  mutate(pred=10^pred) %>% 
+  ggplot(aes(x=growth_rate,y=pred)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~model)

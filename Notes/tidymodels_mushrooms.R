@@ -99,7 +99,7 @@ final_fit %>%
 final_tree <- 
   extract_workflow(final_fit)
 
-# Final Random forest model ####  
+# final Random forest model ####  
 rf_params <- rand_forest(mode = "regression",
                          trees=2000,
                          mtry = best_tree$mtry, # 6 best_tree$mtry
@@ -107,7 +107,7 @@ rf_params <- rand_forest(mode = "regression",
 rf_params
 
 
-## Build model ####
+## build model ####
 rf_xy_fit <- 
   rf_params %>% 
   set_engine("ranger",
@@ -122,7 +122,7 @@ rf_xy_fit <-
 rf_xy_fit
 
 
-## Predictions and testing ####
+## predictions and testing ####
 
 # make predictions for test data set
 predictions <- predict(rf_xy_fit, new_data = test)
@@ -149,7 +149,20 @@ df %>%
 
 ## extract model info and parameters ####
 extract_fit_engine(rf_xy_fit) %>% 
-  vip(20)
+  vip()
 
 # r-squared value
 rf_xy_fit$fit$r.squared
+
+# find variable levels for max growth rate prediction
+df %>% 
+  filter(pred == max(pred)) %>% 
+  select(predictors)
+
+# predictions on hypothetical data ####
+hyp_data <- data.frame(species="P.ostreotus",
+                       light=10,
+                       nitrogen=0,
+                       humidity="low",
+                       temperature=20)
+predict(rf_xy_fit,new_data = hyp_data)

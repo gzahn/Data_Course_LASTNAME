@@ -57,7 +57,7 @@ rf_fit <-
 tree_grid <- 
   grid_regular(mtry(c(1,length(predictors))),
                min_n(),
-               levels=3)
+               levels=5)
 tree_grid
 
 # make cross-val folds
